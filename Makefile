@@ -8,7 +8,9 @@ TWEAK_NAME = AutoTimezone
 
 AutoTimezone_FILES = Tweak.x
 AutoTimezone_CFLAGS = -fobjc-arc
-AutoTimezone_FRAMEWORKS = UIKit Foundation CoreLocation
+AutoTimezone_FRAMEWORKS = UIKit Foundation
 AutoTimezone_PRIVATE_FRAMEWORKS =
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+SUBPROJECTS += AutoTimezonePrefs
+include $(THEOS_MAKE_PATH)/aggregate.mk
