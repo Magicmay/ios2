@@ -9,8 +9,7 @@
 extern void SetTimeZoneWithName(CFStringRef);
 extern CFStringRef CopyTimeZoneName(void);
 
-// 插件配置
-static BOOL isEnabled = YES;
+// 插件配置（简化版本，始终启用）
 static NSString *currentTimezone = nil;
 static NSTimer *updateTimer = nil;
 
@@ -164,10 +163,6 @@ static void setSystemTimezone(NSString *timezone) {
 
 // 更新时区
 static void updateTimezone() {
-    if (!isEnabled) {
-        return;
-    }
-
     NSLog(@"[AutoTimezone] Fetching timezone from IP...");
 
     fetchTimezoneFromIP(^(NSString *timezone) {
@@ -202,22 +197,13 @@ static void startUpdateTimer() {
 - (void)applicationDidFinishLaunching:(id)application {
     %orig;
 
-    NSLog(@"[AutoTimezone] Plugin loaded");
+    NSLog(@"[AutoTimezone] Plugin loaded - Simple version");
 
-    // 读取配置
-    NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.yourdomain.autotimezone.plist"];
-    if (prefs) {
-        isEnabled = [prefs[@"enabled"] boolValue];
-        NSLog(@"[AutoTimezone] Loaded preferences, enabled: %d", isEnabled);
-    }
-
-    if (isEnabled) {
-        // 延迟5秒后第一次更新（等待网络初始化）
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            updateTimezone();
-            startUpdateTimer();
-        });
-    }
+    // 延迟5秒后第一次更新（等待网络初始化）
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        updateTimezone();
+        startUpdateTimer();
+    });
 }
 
 %end
@@ -229,11 +215,9 @@ static void startUpdateTimer() {
     %orig;
 
     // 当WiFi状态改变时，等待3秒后更新时区
-    if (isEnabled) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            updateTimezone();
-        });
-    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        updateTimezone();
+    });
 }
 
 %end
@@ -241,45 +225,6 @@ static void startUpdateTimer() {
 // 插件构造函数
 %ctor {
     @autoreleasepool {
-        NSLog(@"[AutoTimezone] Constructor called");
-
-        // 监听配置变更
-        CFNotificationCenterAddObserver(
-            CFNotificationCenterGetDarwinNotifyCenter(),
-            NULL,
-            (CFNotificationCallback)^{
-                NSLog(@"[AutoTimezone] Preferences changed, reloading...");
-                NSDictionary *prefs = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.yourdomain.autotimezone.plist"];
-                if (prefs) {
-                    isEnabled = [prefs[@"enabled"] boolValue];
-                }
-
-                if (isEnabled) {
-                    updateTimezone();
-                    startUpdateTimer();
-                } else {
-                    if (updateTimer) {
-                        [updateTimer invalidate];
-                        updateTimer = nil;
-                    }
-                }
-            },
-            CFSTR("com.yourdomain.autotimezone/ReloadPrefs"),
-            NULL,
-            CFNotificationSuspensionBehaviorCoalesce
-        );
-
-        // 监听立即更新请求
-        CFNotificationCenterAddObserver(
-            CFNotificationCenterGetDarwinNotifyCenter(),
-            NULL,
-            (CFNotificationCallback)^{
-                NSLog(@"[AutoTimezone] Manual update requested");
-                updateTimezone();
-            },
-            CFSTR("com.yourdomain.autotimezone/UpdateNow"),
-            NULL,
-            CFNotificationSuspensionBehaviorCoalesce
-        );
+        NSLog(@"[AutoTimezone] Constructor called - Simple version (always enabled)");
     }
 }
