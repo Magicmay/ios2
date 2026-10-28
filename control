@@ -1,0 +1,9 @@
+Package: com.yourdomain.autotimezone
+Name: AutoTimezone
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: 自动根据IP地址修改时区的越狱插件。支持iPhone 16.1.1 RootHide越狱环境。
+Maintainer: Your Name
+Author: Your Name
+Section: Tweaks
+Depends: mobilesubstrate, preferenceloader, firmware (>= 14.0)

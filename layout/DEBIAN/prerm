@@ -1,0 +1,10 @@
+#!/bin/bash
+
+echo "正在卸载 AutoTimezone..."
+
+# 清理配置文件
+rm -f /var/mobile/Library/Preferences/com.yourdomain.autotimezone.plist 2>/dev/null
+
+echo "AutoTimezone 已卸载"
+
+exit 0

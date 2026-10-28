@@ -1,0 +1,14 @@
+#!/bin/bash
+
+echo "正在安装 AutoTimezone..."
+
+# 设置正确的权限
+chmod 755 /Library/MobileSubstrate/DynamicLibraries/AutoTimezone.dylib 2>/dev/null
+chmod 644 /Library/MobileSubstrate/DynamicLibraries/AutoTimezone.plist 2>/dev/null
+chmod -R 755 /Library/PreferenceBundles/AutoTimezonePrefs.bundle 2>/dev/null
+chmod 644 /Library/PreferenceLoader/Preferences/AutoTimezonePrefs.plist 2>/dev/null
+
+echo "AutoTimezone 安装完成！"
+echo "请打开设置 > AutoTimezone 启用插件"
+
+exit 0

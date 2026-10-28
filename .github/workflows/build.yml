@@ -1,0 +1,36 @@
+name: Build iOS Tweak
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Theos
+      uses: Randomblock1/theos-action@v1
+
+    - name: Build Package
+      run: |
+        export THEOS=~/theos
+        make package
+
+    - name: Upload DEB Package
+      uses: actions/upload-artifact@v3
+      with:
+        name: AutoTimezone-Package
+        path: packages/*.deb
+
+    - name: Get package info
+      run: |
+        echo "📦 编译完成！"
+        ls -lh packages/
+        echo "下载编译好的 .deb 文件后，传输到你的 iPhone 并使用 Filza 安装"
